@@ -29,6 +29,6 @@ Need a config file to be started. Content:
 - QOS (0 | 1)
 - field size (width, height)
 - field (matrix)
-- initial direction (FORWADE = 0, RIGHT = 1, DOWN = 2, LEFT = 3)
+- initial direction (STRAIGHT = 0, RIGHT = 1, BACK = 2, LEFT = 3)
 
 
