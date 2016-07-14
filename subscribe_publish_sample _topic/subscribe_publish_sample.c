@@ -77,22 +77,61 @@ static bool wallDetected = false;
 static char* state = "";
 static char* direction = "";
 static char* position = "";
-int i = 1;
-int j = 1;
+int i;
+int j;
+int polSizeX;
+int polSizeY;
 char* message = "";
 
 
 static bool isStopped = true;
 static int goDirection = STRAIGHT;
 
-const int pol[8][9] = { {1, 1, 1, 1, 1, 1, 1, 1, 1},
-	      		{1, 0, 0, 0, 0, 0, 0, 0, 1},
-	      		{1, 0, 0, 1, 0, 0, 0, 0, 1},
-	      		{1, 0, 0, 0, 0, 0, 0, 0, 1},
-	      		{1, 0, 0, 1, 0, 0, 0, 0, 1},
-	      		{1, 0, 0, 1, 1, 1, 0, 1, 1},
-	      		{1, 0, 0, 0, 0, 0, 0, 0, 1},
-	      		{1, 1, 1, 1, 1, 1, 1, 1, 1}};
+int **pol;
+
+static char* initField(char* filename) {
+	
+	FILE *file;
+	char* buff = (char*)malloc(sizeof(char) * 100);
+
+	file = fopen(filename, "r");
+	if(!file)
+    	{
+            printf("File Not Found!!\n");
+            exit(-1);
+    	}
+	fscanf(file, "%d %d", &polSizeX, &polSizeY);
+	
+	pol = malloc(polSizeX * sizeof(int));
+	for(i = 0; i < polSizeX; ++i)
+		pol[i] = malloc(polSizeY * sizeof(int));
+	
+	for(i = 0; i < polSizeX; i++)
+		for(j = 0; j < polSizeY; j++)
+	       		fscanf(file, "%d", &pol[i][j]);
+	
+	fscanf(file, "%d %d", &i, &j);
+	fclose(file);
+	return buff;
+}
+
+void printField() {
+	int k;
+	int l;
+	for(k = 0; k < polSizeX; k++) {
+		for(l = 0; l < polSizeY; l++) {
+			if (k == i && l == j)
+				printf("%s ", "X");
+			else 
+				if (pol[k][l] == 0)
+					printf("%d ", pol[k][l]);
+				else
+					printf("  ");
+		}
+		printf("\n");
+	}
+
+}
 
 static void setDirection() {
 	switch (goDirection) {
@@ -386,6 +425,9 @@ int main(int argc, char **argv) {
 	position = (char*)malloc(sizeof(char) * 100);
 	direction = (char*)malloc(sizeof(char) * 100);
 
+	initField("file.txt");
+
+
 	jsonStruct_t stateHandler;
 	stateHandler.cb = NULL;
 	stateHandler.pKey = "state";
@@ -555,6 +597,8 @@ int main(int argc, char **argv) {
 			} else {
 				makeStep();
 				IOT_INFO("Current position: (%d, %d)", i, j);
+				printField();
+
 			}		
 		}
 
